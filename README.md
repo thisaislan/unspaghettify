@@ -1,153 +1,205 @@
 <p align="center">
-  <a href="https://github.com/thisaislan/unspaghettify">
-    <img src="https://github.com/thisaislan/just-images/raw/main/images/unspaghettify/cover.jpg" width="800" height="500">
-  </a>
+  <img src="https://github.com/thisaislan/just-images/raw/main/images/unspaghettify/v0.0.0.png" width="800" height="500">
 </p>
 
-# Is There More to Game Projects Than Managers, Singletons, and Spaghetti?
+# Base Project
 
-> Architecture, Refactoring, and Packaging - from a developer tired of project indigestion.
+Okay, I lied. I used AI. I said I would avoid using it to create the project, but at some point I thought it would be interesting, because in some sense, it would be a nice way to delegate the creation of the project to another being, thus avoiding prematurely adding my ideas and point of view. Other than that, asking an AI to create the project (probably) ensures that the way the project was created reflects some of the code used nowadays without too much complexity or overengineering.
 
-I could have called this *"Ways I Found to Improve My Workflow with Unity"*, or *"Crazy Ideas I Had to Make Games"*, or even *"Let's Talk About Game Development"*. But I think the current title is a little more elegant - and it brings the right feeling. Especially the spaghetti part.
+> I must confess I didn't give much thought to the prompt. The idea was to get a rough draft, so I just asked for the basic structure, without too many details.
 
-But what's the idea behind this work? You're probably wondering. And the simplest answer is: games, more specifically, game development. And yes - with Unity (one more Unity article! Nooooo).
+But I'm standing here describing the project rather than showing it, which is a terrible approach for games. Simply talking about something instead of demonstrating it rarely serves the narrative well. Before I go to the next section and explain the humble project itself, [here](https://thisaislan.github.io/fruit-click/) is a link to view the project online. All new versions will be available on that page, allowing us to follow the project's evolution step-by-step.
 
-I know, nothing new under the sun. But let me at least try to show you the idea behind it all, before you make your final decision: should you stay, or should you go?
+## Fruit Click
 
-## The Work
+Fruit Click is a small reflex game. You get 60 seconds to click fruits that pop up randomly while dodging the bombs mixed in. Miss a fruit? No penalty, just a lost chance. Click a bomb? Minus 10 points. Ouch.
 
-The idea here is simple: instead of just talking about what to do and how to do it, we'll take a simple project and walk it down a path of architectural improvement, coding improvement, and why not - fluffily improvement (That's the advantage of being on GitHub, not Medium).
+Spawns start around every 2 seconds and speed up to about every 0.5 seconds, with a max of 6 items on screen - intense, but still playable. Each fruit (or bomb) appears fully inside the screen, thanks to spawn logic that accounts for item size. A weighted table decides what shows up: cheap fruits are common, rare high-value ones are, well, rare. About one in five spawns is a bomb.
 
-Every new update will bring details about what changed, why it changed, and some discussion around the topic.
+Every fruit has a progress bar that drains over its lifetime. Click it before the bar empties to earn its base points - higher-value fruits have shorter timers, so they're harder to catch.
 
-One important part of this project: I'm still writing it. In other words, we'll discover the best approach and path during development. That also means things will probably change over time. But software architecture is a dynamic exploration, so the idea of changing things over time is nothing new.
+The UI is simple: score top-center, countdown bottom-center, pause button top-right. When the timer hits zero, the round ends and the pause button turns into a replay button, press it to play again. Very dramatic.
 
-> Besides, if a project never changes, it's either too good - or too boring.
+In short: tap fruits for points, dodge bombs, and survive the rising spawn rate before the clock runs out.
 
-By now, you're probably wondering who I am. So...
+> A masterpiece. You might find one or two like that on the market, but this one still feels totally fresh. Joking aside, I avoid copy-pasting the [Fruit Ninja](https://www.halfbrick.com/games/fruit-ninja-classic) idea to simplify the project.
 
-## Who I am
+## What I did?
 
-My name is Aislan Tavares. I'm passionate about digital games, with occasional relapses into mobile development. I've been working as a software developer for over ten years now, mostly in the mobile space - iOS and Android - but in recent years, I've shifted my focus primarily to game development. Creating new games, building features, supporting ongoing projects, releasing DLC for all kinds of games. That's where I live now.
+As I pointed out before, I started asking the AI to create the game, but since I was using the web version of DeepSeek, I needed to ask via a prompt to create the scripts and the step-by-step of how to implement the project. Although I think I still remember how to implement a simple project in Unity (I think), the idea here is to use the AI as an external thinking mind, so I avoid adding my own point of view at the start, but I still gain some knowledge about that project.
 
-I was born in Salvador, a small, hot, and beautiful city in the northeast of Brazil. In 2017, I graduated with a bachelor's degree in Computer Science - with high honors. The following year, I decided to launch my first game with two friends. The goal was simple: put everything I knew to the test. So I wore every hat - software developer, artist, game designer, audio engineer, tool builder, project manager. In 2019, we happily launched Jump Box on the Google Play Store.
+Using [Unity version 6000.6.0f1](https://unity.com/releases/editor/whats-new/6000.6.0f1), I started with an empty Universal 2D project, deleted the welcome package, and used [gitignore.io](https://www.toptal.com/developers/gitignore) to create the [gitignore](https://git-scm.com/docs/gitignore) file. As you can see, there's nothing fancy or any shenanigans in the settings.
 
-When I'm not studying, working, or playing video games, I make crazy little projects. Small mobile apps, unconventional web experiments, little games in different engines - Godot, Unreal, Love2D. Just for fun and to keep my knowledge sharp. If you want to see some of my crazy projects, you can find some of them on my GitHub.
+> If you want to create the same gitignore file, just click on that [link](https://www.toptal.com/developers/gitignore/api/unity,visualstudiocode,rider). It is worth noting that I am not advertising here; I simply think this type of tool should be used more in daily life to help people with their projects.
 
-> That is funny, because you are in my Github.
+After that, I just started follow the AI steps, and tah dah, we have Fruit Click. And, exactly as I predicted, I couldn't resist adding a few little things, as you can see. I added some sprites and a font too and below you can see all the assets I used, alongside the link where I found each one:
 
-## What to expect
+  - **Fruits icon pack**, Robert Brooks - https://gamedeveloperstudio.itch.io/fruits-icon-pack
+  - **Cozy UI Pack**, dobo_ui - https://dobo-ui.itch.io/cozy-ui
+  - **Bomb Asset**, Thelma Carr - https://freepngimg.com/png/100213-bomb
+  - **Sillyfox Font**, KURO GAMES ENTERTAINMENT - https://kuroo-games.itch.io/sillyfox-font-3
 
-Well, as I said, I'm still writing this - so I'm not sure about every detail of the project yet. But because I have a huge amount of experience working with myself, I have a pretty good idea of where it's headed.
 
-> I'd venture to say I have more experience working with myself than anyone else in the world. Is there a Guinness World Record for that? I should check.
+Well, maybe you're thinking: why did I put sprites and even a font in the project already? The answer is simple: since the core is already done - although it's not a complicated one - adding some juice as soon as possible is a nice way to start feeling the project, test the art concept, and even keep the developer (in this case, me) a little happy. Although maybe simply adding images and fonts can't be called "juice," I'd say it helps me avoid adding more "ugly" things during development, since I'm seeing "nice" things - something like the [Broken Window Effect](https://www.joelvanderweele.eu/wp-content/uploads/2021/11/BrokenWindows.pdf). But that's not my field, and I think we could talk about it in a game design section.
 
-The first decision: I'll use Unity. The main reason is simple - I have professional and personal experience with the engine. Beyond that, the community around Unity is enormous. And part of the idea behind this project isn't about teaching per se, but rather starting a conversation. A conversation about game development in terms of where to put what, and some of the whys along the way.
+> Yeah, maybe you noticed I ignored the audio settings here in the juice process. Please don't do that in your game. Maybe in a real project I could think about the audio side at the same moment I think about the image side; both will help to craft the experience, and in the end, the gaming experience is the game itself.
 
-> Another part of this is the hope of being noticed. Maybe hired by Extremely OK Games or Supergiant? Haha, just kidding... or am I...?
+## Game Design
 
-Using Unity for this project doesn't mean the discussion is limited to that engine. Of course, libraries, components, and some implementation details will be Unity-specific. But a big chunk of the concepts, libraries, and ideas are useful in other engines too. For instance, some of the libraries I've written are already planned to be ported to Godot.
+OK, I added that chapter because I thought it would be boring to only present the project and explain it. But in the end, I think it works well — speaking directly about some game design improvements that could be made in this project, even though I don't think I'll implement all of them. Maybe just a few.
 
-Although we'll work with Unity, I'm sorry to inform you that you probably won't see Addressables, Input System, UI Toolkit, or Localization. Well - the last one we might have a simple const system, but I can't call that a localization system. The point is to bring the discussion around project improvements. The Unity ecosystem is beside the point. Sorry if that's what you came here for.
+Without futher talking, let's start with the one we had already talked about before:
 
-At some level, I can say that I'm trying to fill a middle ground with this work. Ever since my undergraduate days, I've felt we don't talk enough about architecture and the health of game development. About how to keep old developers sane - and pave a path for newcomers. It's easy to find tutorials on high-level concepts, even more so about how to use specific features. But the middle ground? That's still something we should occupy a little more.
+### Juice
+ 
+The term was first coined in the article [How to Prototype a Game in Under 7 Days](https://www.gamedeveloper.com/game-platforms/how-to-prototype-a-game-in-under-7-days). In game development, it means that extra layer of feedback that makes a game feel responsive, satisfying, and alive. Adding sound effects early can definitely be part of juicing. Adding nice art assets early, though, isn't automatically "juice" - usually only if those assets are used as responsive feedback to player actions.
 
-And maybe the last important detail - and you may have already noticed, given the title resemblance to another famous one and the cover image inspiration - I'll be drawing a lot of inspiration from the work of [Bob Nystrom](https://github.com/munificent). More specifically, from his book [Game Programming Patterns](https://gameprogrammingpatterns.com/). I've been using that book as my Bible for years now. Not because I'm crazy about Patterns, but because Mr. Nystrom offers us more than just a way to organize code and its relationships. He offers a clean, simple, experience-rich way to think about development. And in this field, that's priceless.
+> We can see the concept/idea of juice being mixed with polish or an early art/audio pass, but I'm not here to debate the terminology - just to share the nice things.
 
-> The title was inspired by Bob Nystrom's talk, [There More to Game Architecture than ECS?](https://www.youtube.com/watch?v=JxI3Eu5DPwE), just amazing.
+It's possible - and perhaps desirable - to add juice throughout every phase of the game's development. That said, applying some juice early can help, it lets developers feel the experience sooner, allowing changes and improvements early on too. It can also help validate user experience feedback and concepts.
 
-## Elephant in the room
+Of course, some balance is necessary here. Perhaps the best moment to do that is after closing the core or after the main features are in, so the task of adding juice doesn't cannibalize other important tasks. Every game has its own pace, and the team needs to figure out the best moment to do that.
 
-AI... Yep, that's the elephant in the room. And the truth is, I'm not planning to use AI for this project. I know, I know - AI is the new big word of the moment. If I don't put a single MCP in this project, it might become an old-school kind of work. But the idea came before the most recent AI boom, and I want to keep this an experimental, human-based endeavor.
+> To be fair, I love the final stages, where we add juice and do the polishing - it’s like taking something that already shines and making it shine even brighter. The only problem is knowing when to stop.
 
-> Of course, I can't say the idea came before AI as a field - otherwise, my good friends from the [Dartmouth Workshop, 1956](https://home.dartmouth.edu/about/artificial-intelligence-ai-coined-dartmouth), might get a little upset.
+### Randomness
 
-Another aspect of this decision is simple: the core idea is to transfer my point of view, share my expertise, and also raise my vulnerabilities as a developer. To start a discussion about the health of game development processes. Bringing AI into the mix could disrupt the very purpose of the project.
+As you could see in the project description, we count a lot on randomness: the fruits appear in random positions, and the fruit itself - or the bomb - is a random choice, even using some weight. Whether or how computers can really generate randomness, or the distinction between pseudo-random vs true random, is beside the purpose of this section. But the usage of some trick to create a nice experience using them is, happily, not.
 
-Also, there are libraries and ideas I want to expose and test myself. I want to feel how they behave during the project's evolution and, in the end, bring my experience to the table. Again, I need to put my own hands on the project and feel things for myself.
+> Before proceeding, I avoided delving into every topic (or potential topic) here, to avoid information overload. However, you will find more information in the `See Also` section, if you wish to explore further.
 
-Of course, I'm not saying I don't use AI. If you look at some of my recent GitHub updates, you'll see extensive AI usage to speed up delivery - which allowed me to reach this project earlier than expected. In fact, most (if not all) of the libraries I was working on came before the big AI moment. Each helped me speed up the process.
+#### Fruit Selection
 
-> But I still have that feeling: I left some bugs there because AI is too fast, and I'm just a human trying to keep tabs on a lot of projects. That feeling is distressing.
+Although randomness looks like a fair way to deal with the fruit selection or even a bomb, nothing can guarantee a nice experience when the whole selection is random. Same fruits can appear a lot of times, or never appear. Also, from a game design point of view, that removes control of the situation, leaving the experience at the mercy of chance. I decided to use a weight system to try to balance things, but there are more interesting ways to allow some feeling of randomness without messing with the game design.
 
-And maybe the only AI usage you'll be able to follow in this project is the text revision. Surprise, surprise - English is not my first language. So I'm using AI to revise my texts and give me tips on how to better convey my ideas.
+One of the ways I brought to the table at the start of the project is the 7-bag system, or any variant, like in the [Tetris](https://tetris.com/) game. The idea behind the 7-bag system is to keep a "bag" containing exactly one of each of the seven tetrominoes: I, O, T, S, Z, J, and L. At the start, the bag is filled with those seven pieces and then shuffled into a random order. When the game needs a new piece, it takes the next one from the front of the bag. Once the bag is empty, you create a fresh bag with one of each piece again, shuffle it, and keep drawing from it.
 
-> If you're curious about what AI tool I used for this project: [DeepSeek](https://deepseek.com/en/index.html), the free online version. Believe me, you can get a huge amount of help just with free tools these days.
+This will allow the person to see all the fruits and ensure that a specific fruit is never further away than the total number of fruits.
 
-## Tag system
+But maybe the best idea here would be to create pre-made bags with a preset of fruits. This way, the person playing can get the feeling of “knowing” the next fruit selected in the game. For example, if I have the following bags:
 
-Semantic Versioning is a widely adopted system for versioning software. Because of that, I don't think we need to discuss it at length here - but here's a quick refresher on how it works.
+```
+Bag 1 - A, B, D
+Bag 2 - A, C, E
+Bag 3 - F, E, C
+```
 
-Given a version number **`MAJOR`.`MINOR`.`PATCH`**, increment:
+> I chose letters here only to simplify the explanation.
 
-- **MAJOR** version when you make incompatible API changes
+By the time the person sees an `F` appearing, they know the following two pieces. Of course, we can get random elements in the bag, creating a certain sensation for the person. But still, if the element `F` appears, and no `E` or `C` has appeared yet, most people who have played the game enough times will intuitively guess the next possible pieces.
 
-- **MINOR** version when you add functionality in a backward-compatible manner
+Another advantage of that approach is that we can choose which bags will appear in each stage, in case of a game with multiple stages. This allows some level of control, and also let us know the maximum (and minimum) number of points possible in each stage. For instance:
 
-- **PATCH** version when you make backward-compatible bug fixes
+```
+Stage 1 - Bag 1, Bag 2
+Stage 2 - Bag 2, Bag 3
+```
 
-> Semantic Versioning - or [SemVer](https://semver.org/) for short.
+> `D` and `F` had a problem in the past and can't play along...
 
-With that in mind - and knowing we can create tags on GitHub (well, actually in Git itself) - the following tag system will be established:
+Of course, here a little randomness can help set the tone of the experience. Although the bags are previously selected, the order in which they appear can be random.
 
-Given a version number **`X`.`Y`.`Z`**:
+The bag system alone gives us options for the game's tone: from something that looks totally random to tightly controlled, predictable gameplay for more experienced players. The choice should be based on the experience we have in mind.
 
-- **X** – Improvement: The efficiency and structural integrity. How much better is the project compared to the base?
+Alongside weight - the one the project is using - and bag, maybe we could also talk a little about the history-based system. The [Tetris: The Grand Master (TGM)](https://tetris.com/products/video-game/tetris-the-grand-master) series is the pioneer here. It keeps a 4-piece history. When generating a new piece, it "rolls" a random piece multiple times (4 tries in TGM1, 6 in TGM2) until it finds one that isn't in the history. If all tries fail, it settles for a recent piece. This method effectively minimizes immediate repeats, but it doesn't offer the strict mathematical guarantees of a bag system.
 
-- **Y** – Complexity/Progress: The sheer scale of complexity. How much more stuff exists compared to the base?
+#### Fruit Position
 
-- **Z** – Vanity/Fluff: The aesthetic and personal touches. How much frivolous polish (frufruzisse!) have I added for my own delight?
+In the same way as the fruit selection, the position is random in the project. That can be totally ok, but if you have already played games like [Just Dance](https://www.ubisoft.com/en-us/game/just-dance), [Guitar Hero](https://en.wikipedia.org/wiki/Guitar_Hero) or [Beat Saber](https://www.beatsaber.com/), you will notice that these games have some kind of rhythm, some kind of direction to the motion. Things do not appear in any random position. Even in Fruit Ninja, the fruit positions can bring some ordered aspect when they appear.
 
-By incrementing these numbers independently - and logging why we moved each one - we turn version control into a psychological mirror. We'll visually see if we're obsessed with making things work (`X`), making things massive (`Y`), or making things beautiful (`Z`).
+Well, not here. But we can bring some order to the chaos with fill tricks, and again, it depends on the kind of experience we want to create.
 
-So with that in mind, if you see a tag like `1.3.0` followed by `1.4.1` in sequence, that means I probably added some fluff - just because I wanted to improve the Unity UI probably, or something along those lines. A little more complexity, a little more fluff, but no real feature improvement to speak of. Just beauty.
+##### Minimum Distance Between Elements
 
-> To be fair, a lot of libraries are like this... I'm not complaining. I like a little beauty in my days.
+One of the most common techniques is Poisson Disk Sampling. Instead of scattering points completely at random, it guarantees a minimum distance between each one with one simple rule: `no two things can be closer than a certain minimum distance`. Think of a forest: trees don't grow on top of each other, but they also don't form a perfect grid. That's the kind of organic yet orderly spread you get. It's perfect for placing trees, rocks, or spawn points so they never clump together in a way that feels messy.
 
-The first tag will be [v0.0.0](https://github.com/thisaislan/unspaghettify/blob/v0.0.0/README.md) - the bare-bones project, the starting point. You can find the full list of available tags [here](https://github.com/thisaislan/unspaghettify/tags).
+##### Fill The Space Without Losing Memory
 
-To be fair, I don't know what the last tag will be. But I know that at some point, some of my experiments will be too much. Too niche. Too specific. So with that in mind, I'll prioritize changes that really help most people in real projects.
+Another approach is using Halton or Sobol sequences. Imagine you want to scatter points across a square, but you don't want them to clump together or leave big empty gaps. A Halton sequence is a formula that gives you a list of points which look random, but are actually carefully spaced to fill the space as evenly as possible. The trick is `digit reversal`.
 
-At some point, I'll reach a place where I can say: "This is a good point". A place where I've touched on all the crucial points we need to cover. When that happens, I'll come back here and share that tag.
+Let's say you're using base 2. You count normally: 1, 2, 3, 4. For each number, you:
 
-That way, if you ever want to see where this project thinks is a nice way to work, you can find it easily.
+1. Write it in binary.
+2. Reverse the digits and put a decimal point in front.
+3. Convert back to a decimal.
+
+Doing it for the first few numbers:
+
+| Count | Binary | Reversed | Decimal |
+| --- | --- | --- | --- |
+| 1 | 1 | 0.1 | 1/2 |
+| 2 | 10 | 0.01 | 1/4 |
+| 3 | 11 | 0.11 | 3/4 |
+| 4 | 100 | 0.001 | 1/8 |
+| 5 | 101 | 0.101 | 5/8 |
+
+So the sequence is: 1/2, 1/4, 3/4, 1/8, 5/8.
+
+Notice how it jumps around, but never lands too close to a previous point. It "fills in the gaps".
+
+For 2D points, you just use two different bases:
+
+```
+X coordinate: base 2
+Y coordinate: base 3
+```
+
+For 3D, add a Z coordinate: base 5. Each new dimension uses the next prime number.
+
+A famous example is [Spore](https://www.ea.com/games/spore/spore), which used an incremental Halton sequence to distribute objects. You can even use the sequence index to vary attributes like color or scale, so similar objects end up far apart.
+
+##### Cell based
+
+Often used for maps and levels, Wave Function Collapse (WFC) is a procedural generation technique. It looks at a set of example patterns you give it, then creates new layouts that follow the same rules. With some changes we can use it here for spawn waves.
+
+Imagine an empty grid where each cell will eventually hold one spawn tile. At the start, every cell can be almost any tile. WFC doesn’t fill the grid in order. Instead, it finds the cell with the fewest possible tiles left, chooses one of them, and places it there. That choice affects the neighboring cells: based on the example patterns, some tiles can no longer sit next to the chosen tile, so WFC removes those tiles from the neighbors’ options. That can cause more removals in their neighbors, and so on. WFC repeats this - pick the most restricted cell, place a tile, remove incompatible options nearby - until every cell has exactly one tile.
+
+The result is a spawn pattern that feels locally random but globally organized. The player sees variety, but the wave has a logical flow - like the fruit is coming at them in a designed sequence, not just popping up wherever.
+
+It's like solving a puzzle where the pieces are your fruit formations, and the rules are `what can sit next to what`.
+
+##### Full control
+
+For highly authored experiences, nothing beats a [data-driven](https://www.dataversity.net/data-concepts/what-is-data-driven/) spawn system. You can define waves, timing, and positions in a [CSV](https://formatarc.com/en/blog/what-is-csv/), [JSON](https://www.json.org/json-en.html), or a custom editor tool. Then a spawn system reads that data and executes the patterns. This lets designers iterate quickly without touching code. Think of rhythm games where every beat has a specific spawn point and enemy type - that's data-driven design at work.
+
+## Or, Do It Yourself
+
+Something important to say is - and maybe I should add that section before the game design section - you do not need to know everything about game design, or a specific style of game, or all the techniques to create games before you start your game - or even release it. Of course, some specific knowledge would help you and has already been tested, which can bring some security, but games are also an expression and a vision of ideas.
+
+During the development of that chapter, I came across the video [How Balatro Was Made and Why The Creator Expected to Sell Only 6 Copies](https://www.youtube.com/watch?v=g86eP48WN78) on [ThatGuyGlen channel](https://www.youtube.com/@ThatGuyGlen) and found out that [LocalThunk](https://localthunk.com/), the creator of the hit game [Balatro](https://www.playbalatro.com/), never played a [deck game](https://www.gaming.net/what-is-a-deck-building-game/) before creating his own, but the game is amazing - seriously, play it if you never have.
+
+Well, I think the last thing I should say here is: be yourself, and of course be prepared for some people not to fall in love with your project. That is ok. No game is perfect for every person in the world; we have distinct lives, points of view, and tastes - and that is beautiful and should be respected. At the same time, we should respect our own point of view, our team, and our project as a whole. So I know that is not easy - just try to play fair and be understanding; creating a game is a long but unique process.
+
+> In some cases, even you will think your game has problems - In fact, often - but that is ok. I encourage you to watch the video [Balatro's 'Cursed' Design Problem](https://www.youtube.com/watch?v=zk3S3o1qOHo) from [Game Maker's Toolkit](https://www.youtube.com/@GMTK) and see a little more about the "bigger design flow" through the designer's own vision.
 
 ## See Also
 
-We've covered a lot, but some tools and concepts were just mentioned in passing. If you want to dig into those concepts and tools a little more, here's the full list.
+- [Juice it or Lose It](https://gdcvault.com/play/1016487/Juice-It-or-Lose) by Martin Jonasson & Petri Purho, is widely considered the definitive talk on game juice.
 
-- [**MCP**](https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro) - Model Context Protocol, is an open-source standard for connecting AI applications to external systems.
+- [The art of screenshake](https://www.youtube.com/watch?v=AJdEqssNZ-U) by Jan Willem Nijman is another classic that maybe you should check.
 
-- [**Git**](https://git-scm.com/) - A free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+- If you are interested in discussions about truly random numbers, you might like the article [Can a computer generate a truly random number?](https://engineering.mit.edu/ask-an-engineer/can-a-computer-generate-a-truly-random-number).
 
-- [**Github**](https://github.com/) - Proprietary platform for developers that allows them to create, store, manage, and share code. It uses Git to provide distributed version control, and GitHub itself offers access control, bug tracking, software feature requests, task management, continuous integration, and wikis for each project.
+- But, if your interest is specifically the aspect of randomness in games, these contents are for you: [Take a Chance: The Illusion of Randomness in Games](https://www.gamedeveloper.com/design/take-a-chance-the-illusion-of-randomness-in-games), [How and why game devs manipulate 'luck' in games like Peggle](https://www.gamedeveloper.com/design/how-and-why-game-devs-manipulate-luck-in-games-like-i-peggle-i-) and [The History of Randomness (and how gamblers invented probability)](https://www.youtube.com/watch?v=snVouw9bCq0).
 
-- [**Tag**](https://git-scm.com/book/en/v2/Git-Basics-Tagging) - Like most VCSs, Git has the ability to tag specific points in a repository’s history as being important. Typically, people use this functionality to mark release points (v1.0, v2.0 and so on).
+- If you, like me, enjoy Tetris — and want to know a bit more about the randomization systems - here are a few articles: [How Tetris Randomizers Work (Bag, 7-Bag, Memoryless)](https://dinogame.gg/blog/how-tetris-randomizers-work/), [The history of Tetris randomizers](https://simon.lc/the-history-of-tetris-randomizers).
 
-- [**Addressables**](https://docs.unity3d.com/2021.2/Documentation/Manual/com.unity.addressables.html) - The Addressables system provides tools and scripts to organize and package content for your application and an API to load and release assets at runtime.
+- [Pity System](https://www.g2a.com/news/glossary/what-is-a-pity-system-in-gaming-how-guaranteed-pulls-and-drop-protecti) was left out here, but it could be an excellent addition to make games that rely on randomness a bit more "fair."
 
-- [**Input System**](https://docs.unity3d.com/Manual/Input.html) - The Unity Input System is a flexible package that allows developers to manage input from various devices, replacing the older Input Manager. It supports event-driven interactions and can be installed via the Unity Package Manager for projects using Unity 2019 LTS or later
+- A nice way to see Poisson-Disc Sampling working is in the [Jason Davies](https://www.jasondavies.com/) project [here](https://www.jasondavies.com/poisson-disc/).
 
-- [**UI Tollkit**](https://docs.unity3d.com/Manual/UIElements.html) - UI Toolkit is a collection of features, resources, and tools for developing user interface (UI).
+- The article [Fast Object Distribution](https://www.cs.cmu.edu/~ajw/s2007/0312-ObjectDistribution.pdf) does an excellent job of explaining the use of Halton sequences in games.
 
-- [**Localization**](https://docs.unity3d.com/2021.3/Documentation/Manual/com.unity.localization.html) - Use the Localization package to easily configure localization settings for your application.
+- Check that nice [article](https://excaliburjs.com/blog/Wave%20Function%20Collapse) about the WFC technique.
 
-## Furthermore
-
-This work is trying to raise discussion - so bring it to friends, colleagues, peers, to everyone. A lot of the points here will go against the most common techniques and patterns in the market. And that's okay, we can't make an omelet without breaking some eggs.
-
-With more options, more ideas, and more fields involved, we increase the chance of creating more accessible and democratic projects. Projects where everyone involved is, well... really involved.
-
-And last but not least: be gentle.
-
-***Be gentle with yourself. Be gentle with others. Be gentle with everything involved.***
-
-Building anything is a complex and hard process, full of opposing ideas and perspectives. But no one said it should be disrespectful - or even unfun. After all, we're creating games. And what would games be without fun?
-
-: )
-
+</br>
 <p align="center">
-  <a href="https://github.com/thisaislan/unspaghettify/blob/v0.0.0/README.md">
+<a href="https://github.com/thisaislan/unspaghettify/blob/home/README.md">
+    prev</a>
+    |
+  <a href="https://github.com/thisaislan/unspaghettify/blob/index/README.md">
+    index</a>
+    |
+  <a href="https://github.com/thisaislan/unspaghettify/blob/soon/README.md">
     next</a>
 </p>
-
