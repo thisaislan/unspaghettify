@@ -9,8 +9,6 @@ public class GameManager : MonoBehaviour
     private const string PLAY_LABEL = "Play";
     private const string REPLAY_LABEL = "Replay";
 
-    public static GameManager Instance { get; private set; }
-
     [Header("References")]
     public Canvas canvas;
     public GameObject fruitPrefab;
@@ -38,16 +36,20 @@ public class GameManager : MonoBehaviour
     private float currentSpawnInterval;
     private int fruitsActive = 0;
 
+    public static GameManager Instance { get; private set; }
+
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
 
         currentSpawnInterval = spawnIntervalStart;
-
-        // Fallback: auto-find a canvas if not assigned
-        if (canvas == null)
-            canvas = FindObjectOfType<Canvas>();
     }
 
     private void Start()
@@ -97,13 +99,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private int CountActiveItems()
     {
-        if (canvas == null) return fruitsActive;
+        if (canvas == null)
+        {
+            return fruitsActive;
+        }
 
         int count = 0;
+
         foreach (Transform child in canvas.transform)
         {
             if (child.GetComponent<Fruit>() != null || child.GetComponent<Bomb>() != null)
+            {
                 count++;
+            }
         }
 
         // Sync the counter to reality (prevents drift)
@@ -111,7 +119,7 @@ public class GameManager : MonoBehaviour
         return count;
     }
 
-        private void SpawnItem()
+    private void SpawnItem()
     {
         bool isBomb = Random.value < 0.2f;
 
@@ -144,6 +152,7 @@ public class GameManager : MonoBehaviour
         obj.transform.localRotation = Quaternion.identity;
 
         RectTransform rt = obj.GetComponent<RectTransform>();
+
         if (rt != null)
         {
             // Force center anchor/pivot so anchoredPosition (0,0) = center of canvas
@@ -179,8 +188,15 @@ public class GameManager : MonoBehaviour
         float minY = -canvasHeight / 2f + halfSize.y + margin;
         float maxY = canvasHeight / 2f - halfSize.y - margin;
 
-        if (minX > maxX) { minX = maxX = 0f; }
-        if (minY > maxY) { minY = maxY = 0f; }
+        if (minX > maxX)
+        {
+            minX = maxX = 0f;
+        }
+
+        if (minY > maxY)
+        {
+            minY = maxY = 0f;
+        }
 
         return new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
     }
@@ -198,6 +214,7 @@ public class GameManager : MonoBehaviour
         Vector2 size = new Vector2(100f, 100f); // default fallback
 
         RectTransform rt = temp.GetComponent<RectTransform>();
+
         if (rt != null)
         {
             // LayoutRebuilder ensures size is up to date if using layout components
@@ -206,13 +223,22 @@ public class GameManager : MonoBehaviour
 
             // If size is still 0, try sizeDelta
             if (size.x <= 0f || size.y <= 0f)
+            {
                 size = rt.sizeDelta;
+            }
         }
 
         Destroy(temp);
 
-        if (size.x <= 0f) size.x = 100f;
-        if (size.y <= 0f) size.y = 100f;
+        if (size.x <= 0f)
+        {
+            size.x = 100f;
+        }
+
+        if (size.y <= 0f)
+        {
+            size.y = 100f;
+        }
 
         return size * 0.5f;
     }
@@ -220,13 +246,22 @@ public class GameManager : MonoBehaviour
     private FruitData GetWeightedRandomFruit()
     {
         float totalWeight = 0f;
-        foreach (var f in fruitDatas) totalWeight += f.weight;
+
+        foreach (var f in fruitDatas)
+        {
+            totalWeight += f.weight;
+        }
+
         float rand = Random.Range(0f, totalWeight);
         float cumulative = 0f;
+
         foreach (var f in fruitDatas)
         {
             cumulative += f.weight;
-            if (rand <= cumulative) return f;
+            if (rand <= cumulative)
+            {
+                return f;
+            }
         }
         return fruitDatas[0];
     }
@@ -234,13 +269,14 @@ public class GameManager : MonoBehaviour
 
     public void OnFruitClicked(Fruit fruit, float clickProgress, Vector3 worldPos)
     {
-        if (isPaused || gameOver) return;
+        if (isPaused || gameOver)
+        {
+            return;
+        }
 
         FruitData data = fruit.Data;
 
-        int points = 0;
-
-        points = data.basePoints;
+        int points = data.basePoints;
         
         AddScore(points);
         fruit.DestroyFruit();
@@ -249,8 +285,13 @@ public class GameManager : MonoBehaviour
 
     public void OnBombClicked(Bomb bomb, Vector3 worldPos)
     {
-        if (isPaused || gameOver) return;
+        if (isPaused || gameOver)
+        {
+            return;
+        }
+
         int penalty = -10;
+
         AddScore(penalty);
         bomb.DestroyBomb();
         fruitsActive--;
@@ -264,8 +305,15 @@ public class GameManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (scoreText) scoreText.text = "Score: " + score;
-        if (timerText) timerText.text = Mathf.CeilToInt(gameTime).ToString();
+        if (scoreText)
+        {
+            scoreText.text = "Score: " + score;
+        }
+
+        if (timerText)
+        {
+            timerText.text = Mathf.CeilToInt(gameTime).ToString();
+        }
     }
 
     public void TogglePause()
@@ -281,7 +329,10 @@ public class GameManager : MonoBehaviour
         pauseButtonText.text = isPaused ? PLAY_LABEL : PAUSE_LABEL;
     }
 
-    public void PauseButton() => TogglePause();
+    public void PauseButton()
+    {
+        TogglePause();
+    }
 
     private void OnDestroy()
     {

@@ -8,8 +8,13 @@ public class Bomb : MonoBehaviour
 
     private void Update()
     {
-        if (!isAlive) return;
+        if (!isAlive)
+        {
+            return;
+        }
+
         elapsed += Time.deltaTime;
+
         if (elapsed >= timeToLive)
         {
             DestroyBomb();
@@ -18,13 +23,21 @@ public class Bomb : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!isAlive) return;
+        if (!isAlive)
+        {
+            return;
+        }
+
         GameManager.Instance.OnBombClicked(this, transform.position);
     }
 
     public void DestroyBomb()
     {
-        if (!isAlive) return;
+        if (!isAlive)
+        {
+            return;
+        }
+        
         isAlive = false;
         Destroy(gameObject);
     }

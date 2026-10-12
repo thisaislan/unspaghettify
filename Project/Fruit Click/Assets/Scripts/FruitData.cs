@@ -4,7 +4,13 @@ using UnityEngine;
 public class FruitData : ScriptableObject
 {
     public Sprite sprite;
-    public int basePoints;       // points when clicked in the middle zone
-    public float timeToLive;     // seconds before disappearing (shorter = less points)
-    public float weight = 1f;    // for weighted random (higher = more common)
+
+    // points when clicked in the middle zone
+    public int basePoints;
+
+    // seconds before disappearing (shorter = less points)
+    public float timeToLive;
+
+    // for weighted random (higher = more common)
+    public float weight = 1f;
 }

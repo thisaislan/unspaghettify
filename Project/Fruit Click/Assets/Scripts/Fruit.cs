@@ -3,10 +3,11 @@ using UnityEngine.UI;
 
 public class Fruit : MonoBehaviour
 {
+    [HideInInspector]
+    public FruitData Data { get; private set; }
+
     public Image fruitImage;
     public Image progressBar;
-
-    [HideInInspector] public FruitData Data { get; private set; }
 
     private float elapsed = 0f;
     private bool isAlive = true;
@@ -24,7 +25,10 @@ public class Fruit : MonoBehaviour
 
     private void Update()
     {
-        if (!isAlive || GameManager.Instance == null || Time.timeScale == 0) return;
+        if (!isAlive || GameManager.Instance == null || Time.timeScale == 0)
+        {
+            return;
+        }
 
         elapsed += Time.deltaTime;
 
@@ -42,7 +46,10 @@ public class Fruit : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!isAlive) return;
+        if (!isAlive)
+        {
+            return;
+        }
 
         // Convert click position to local position relative to progress bar
         Vector2 localPoint;
@@ -61,7 +68,11 @@ public class Fruit : MonoBehaviour
 
     public void DestroyFruit()
     {
-        if (!isAlive) return;
+        if (!isAlive)
+        {
+            return;
+        }
+        
         isAlive = false;
         Destroy(gameObject);
     }
