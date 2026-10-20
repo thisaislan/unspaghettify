@@ -1,44 +1,28 @@
+using System.Collections;
 using UnityEngine;
 
-public class Bomb : MonoBehaviour
+public class Bomb : ClickableBehaviour
 {
-    public float timeToLive = 2f;
-    private float elapsed = 0f;
-    private bool isAlive = true;
+    [SerializeField]
+    private float timeToLive = 2f;
 
-    private void Update()
+    [SerializeField]
+    private int pointsToBeDeducted = 10;
+
+    private void Start()
     {
-        if (!isAlive)
-        {
-            return;
-        }
-
-        elapsed += Time.deltaTime;
-
-        if (elapsed >= timeToLive)
-        {
-            DestroyBomb();
-        }
+        StartCountDownCoroutine();
     }
 
-    private void OnMouseDown()
+    protected override int ClickPont()
     {
-        if (!isAlive)
-        {
-            return;
-        }
-
-        GameManager.Instance.OnBombClicked(this, transform.position);
+        return -pointsToBeDeducted;
     }
 
-    public void DestroyBomb()
+    protected override IEnumerator StartCountDown()
     {
-        if (!isAlive)
-        {
-            return;
-        }
-        
-        isAlive = false;
-        Destroy(gameObject);
+        yield return new WaitForSeconds(timeToLive);
+
+        Destroy();
     }
 }

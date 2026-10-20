@@ -8,33 +8,62 @@ public class GameManager : MonoBehaviour
     private const string PAUSE_LABEL = "Pause";
     private const string PLAY_LABEL = "Play";
     private const string REPLAY_LABEL = "Replay";
+    private const string SCORE_FORMAT = "Score: {0}";
+
+    private const float BOMB_SPAWN_CHANCE = 0.2f;
+    private const float SPAWN_MARGIN = 10f;
+    private const float FALLBACK_SIZE = 100f;
+    private const int START_SCENE_INDEX = 0;
+    private const float PLAY_SCALE_TIME = 1f;
+    private const float STOP_SCALE_TIME = 0f;
+
+    [Header("Game Settings")]
+    [SerializeField]
+    private float gameTime = 60f;
 
     [Header("References")]
-    public Canvas canvas;
-    public GameObject fruitPrefab;
-    public GameObject bombPrefab;
+    [SerializeField]
+    private Canvas canvas;
+    
+    [SerializeField]
+    private GameObject fruitPrefab;
+    
+    [SerializeField]
+    private GameObject bombPrefab;
 
     [Header("Fruits")]
-    public FruitData[] fruitDatas;
+    [SerializeField]
+    private FruitData[] fruitDataArray;
 
     [Header("Spawning")]
-    public float spawnIntervalStart = 2f;
-    public float spawnIntervalMin = 0.5f;
-    public float spawnIntervalDecrease = 0.1f;
-    public int maxSimultaneousFruits = 6;
+    [SerializeField]
+    private float spawnIntervalStart = 2f;
+    
+    [SerializeField]
+    private float spawnIntervalMin = 0.5f;
+    
+    [SerializeField]
+    private float spawnIntervalDecrease = 0.1f;
+    
+    [SerializeField]
+    private int maxSimultaneousFruits = 6;
 
     [Header("UI")]
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI timerText;
-    public TextMeshProUGUI pauseButtonText;
+    [SerializeField]
+    private TextMeshProUGUI scoreText;
+    
+    [SerializeField]
+    private TextMeshProUGUI timerText;
+    
+    [SerializeField]
+    private TextMeshProUGUI pauseButtonText;
 
-    private int score = 0;
-    private float gameTime = 60f;
-    private bool isPaused = false;
-    private bool gameOver = false;
-    private float spawnTimer = 0f;
+    private int score;
+    private bool isPaused;
+    private bool gameOver;
+    private float spawnTimer;
     private float currentSpawnInterval;
-    private int fruitsActive = 0;
+    private float currentTime;
 
     public static GameManager Instance { get; private set; }
 
@@ -58,135 +87,72 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GameLoop());
     }
 
-    private IEnumerator GameLoop()
+    private void OnDestroy()
     {
-        while (gameTime > 0 && !gameOver)
-        {
-            if (!isPaused)
-            {
-                gameTime -= Time.deltaTime;
-
-                // Ramp up spawn rate over time
-                currentSpawnInterval = Mathf.Max(spawnIntervalMin,
-                    spawnIntervalStart - (60f - gameTime) * spawnIntervalDecrease);
-
-                UpdateUI();
-
-                spawnTimer += Time.deltaTime;
-                if (spawnTimer >= currentSpawnInterval)
-                {
-                    // Safety: recompute from the actual children count
-                    int activeItems = CountActiveItems();
-
-                    if (activeItems < maxSimultaneousFruits)
-                    {
-                        spawnTimer -= currentSpawnInterval; // subtract instead of reset
-                        SpawnItem();
-                    }
-                    // else: don't reset spawnTimer, so we spawn as soon as a slot frees
-                }
-            }
-            yield return null;
-        }
-
-        if (gameTime <= 0)
-            pauseButtonText.text = REPLAY_LABEL;
+        Time.timeScale = PLAY_SCALE_TIME;
     }
 
-    /// <summary>
-    /// Counts the fruits/bombs currently parented to the canvas.
-    /// This is a safety net so the counter can never get stuck.
-    /// </summary>
-    private int CountActiveItems()
+    public void TogglePause()
     {
-        if (canvas == null)
+        if (gameOver)
         {
-            return fruitsActive;
+            Time.timeScale = PLAY_SCALE_TIME;
+            SceneManager.LoadSceneAsync(START_SCENE_INDEX);
+            return;
         }
 
-        int count = 0;
-
-        foreach (Transform child in canvas.transform)
-        {
-            if (child.GetComponent<Fruit>() != null || child.GetComponent<Bomb>() != null)
-            {
-                count++;
-            }
-        }
-
-        // Sync the counter to reality (prevents drift)
-        fruitsActive = count;
-        return count;
+        isPaused = !isPaused;
+        Time.timeScale = isPaused ? STOP_SCALE_TIME : PLAY_SCALE_TIME;
+        pauseButtonText.text = isPaused ? PLAY_LABEL : PAUSE_LABEL;
     }
 
     private void SpawnItem()
     {
-        bool isBomb = Random.value < 0.2f;
-
-        if (isBomb)
+        if (Random.value < BOMB_SPAWN_CHANCE)
         {
-            Vector2 pos = GetSafeSpawnPosition(bombPrefab);
-            GameObject bomb = SpawnUIObject(bombPrefab, pos);
-            fruitsActive++;
+            SpawnUIObject(bombPrefab, GetSafeSpawnPosition(bombPrefab));
         }
         else
         {
             FruitData chosen = GetWeightedRandomFruit();
-            Vector2 pos = GetSafeSpawnPosition(fruitPrefab);
-            GameObject fruitObj = SpawnUIObject(fruitPrefab, pos);
-            Fruit fruit = fruitObj.GetComponent<Fruit>();
-            fruit.Initialize(chosen);
-            fruitsActive++;
+            GameObject fruitObj = SpawnUIObject(fruitPrefab, GetSafeSpawnPosition(fruitPrefab));
+            fruitObj.GetComponent<Fruit>().Initialize(chosen);
         }
     }
 
-    /// <summary>
-    /// Instantiates a UI prefab as a child of the canvas,
-    /// and correctly places it using anchoredPosition.
-    /// </summary>
     private GameObject SpawnUIObject(GameObject prefab, Vector2 anchoredPos)
     {
-        GameObject obj = Instantiate(prefab);
-        obj.transform.SetParent(canvas.transform, false); // false = keep local transform, not world
-        obj.transform.localScale = Vector3.one;
-        obj.transform.localRotation = Quaternion.identity;
+        GameObject gameObj = Instantiate(prefab);
+        gameObj.transform.SetParent(canvas.transform, false);
+        gameObj.transform.localScale = Vector3.one;
+        gameObj.transform.localRotation = Quaternion.identity;
 
-        RectTransform rt = obj.GetComponent<RectTransform>();
-
-        if (rt != null)
+        if (gameObj.TryGetComponent(out RectTransform rectTransform))
         {
-            // Force center anchor/pivot so anchoredPosition (0,0) = center of canvas
-            rt.anchorMin = new Vector2(0.5f, 0.5f);
-            rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = anchoredPos;
+            rectTransform.anchorMin = rectTransform.anchorMax = rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            rectTransform.anchoredPosition = anchoredPos;
         }
         else
         {
-            // Fallback for non-UI prefabs
-            obj.transform.localPosition = anchoredPos;
+            gameObj.transform.localPosition = anchoredPos;
         }
 
-        return obj;
+        return gameObj;
     }
 
-    /// <summary>
-    /// Returns a random anchoredPosition inside the Canvas,
-    /// keeping the prefab's full size on screen.
-    /// </summary>
     private Vector2 GetSafeSpawnPosition(GameObject prefab)
     {
         RectTransform canvasRect = canvas.GetComponent<RectTransform>();
-        float canvasWidth = canvasRect.rect.width;
+
+        float canvasWidth  = canvasRect.rect.width;
         float canvasHeight = canvasRect.rect.height;
 
         Vector2 halfSize = GetPrefabHalfSize(prefab);
-        float margin = 10f;
 
-        float minX = -canvasWidth / 2f + halfSize.x + margin;
-        float maxX = canvasWidth / 2f - halfSize.x - margin;
-        float minY = -canvasHeight / 2f + halfSize.y + margin;
-        float maxY = canvasHeight / 2f - halfSize.y - margin;
+        float minX = -canvasWidth  / 2f + halfSize.x + SPAWN_MARGIN;
+        float maxX =  canvasWidth  / 2f - halfSize.x - SPAWN_MARGIN;
+        float minY = -canvasHeight / 2f + halfSize.y + SPAWN_MARGIN;
+        float maxY =  canvasHeight / 2f - halfSize.y - SPAWN_MARGIN;
 
         if (minX > maxX)
         {
@@ -201,30 +167,23 @@ public class GameManager : MonoBehaviour
         return new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
     }
 
-    /// <summary>
-    /// Returns half the size of the prefab's RectTransform (in canvas pixels).
-    /// </summary>
     private Vector2 GetPrefabHalfSize(GameObject prefab)
     {
-        // Instantiate temporarily as a child of the canvas so its RectTransform is valid
         GameObject temp = Instantiate(prefab);
+
         temp.transform.SetParent(canvas.transform, false);
         temp.SetActive(false);
 
-        Vector2 size = new Vector2(100f, 100f); // default fallback
+        Vector2 size = new Vector2(FALLBACK_SIZE, FALLBACK_SIZE);
 
-        RectTransform rt = temp.GetComponent<RectTransform>();
-
-        if (rt != null)
+        if (temp.TryGetComponent(out RectTransform rectTransform))
         {
-            // LayoutRebuilder ensures size is up to date if using layout components
-            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
-            size = new Vector2(rt.rect.width, rt.rect.height);
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+            size = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
 
-            // If size is still 0, try sizeDelta
             if (size.x <= 0f || size.y <= 0f)
             {
-                size = rt.sizeDelta;
+                size = rectTransform.sizeDelta;
             }
         }
 
@@ -232,12 +191,12 @@ public class GameManager : MonoBehaviour
 
         if (size.x <= 0f)
         {
-            size.x = 100f;
+            size.x = FALLBACK_SIZE;
         }
 
         if (size.y <= 0f)
         {
-            size.y = 100f;
+            size.y = FALLBACK_SIZE;
         }
 
         return size * 0.5f;
@@ -246,55 +205,48 @@ public class GameManager : MonoBehaviour
     private FruitData GetWeightedRandomFruit()
     {
         float totalWeight = 0f;
+        foreach (FruitData f in fruitDataArray) totalWeight += f.weight;
 
-        foreach (var f in fruitDatas)
-        {
-            totalWeight += f.weight;
-        }
-
-        float rand = Random.Range(0f, totalWeight);
+        float rand   = Random.Range(0f, totalWeight);
         float cumulative = 0f;
 
-        foreach (var f in fruitDatas)
+        foreach (FruitData fruitData in fruitDataArray)
         {
-            cumulative += f.weight;
+            cumulative += fruitData.weight;
+
             if (rand <= cumulative)
             {
-                return f;
+                return fruitData;
             }
         }
-        return fruitDatas[0];
+
+        return fruitDataArray[0];
     }
 
+    /// <summary>
+    /// Returns how many live (active) clickable items currently exist on the canvas.
+    /// Using a live count avoids the counter leak that occurred when fruits/bombs
+    /// destroyed themselves without being clicked.
+    /// </summary>
+    private int GetActiveItemCount()
+    {
+        if (canvas == null)
+        {
+            return 0;
+        }
 
-    public void OnFruitClicked(Fruit fruit, float clickProgress, Vector3 worldPos)
+        return canvas.GetComponentsInChildren<ClickableBehaviour>(false).Length;
+    }
+
+    public void OnClicked(ClickableBehaviour clickableBehaviour, int points)
     {
         if (isPaused || gameOver)
         {
             return;
         }
 
-        FruitData data = fruit.Data;
-
-        int points = data.basePoints;
-        
         AddScore(points);
-        fruit.DestroyFruit();
-        fruitsActive--;
-    }
-
-    public void OnBombClicked(Bomb bomb, Vector3 worldPos)
-    {
-        if (isPaused || gameOver)
-        {
-            return;
-        }
-
-        int penalty = -10;
-
-        AddScore(penalty);
-        bomb.DestroyBomb();
-        fruitsActive--;
+        clickableBehaviour.Destroy();
     }
 
     private void AddScore(int amount)
@@ -307,35 +259,55 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText)
         {
-            scoreText.text = "Score: " + score;
+            scoreText.SetText(SCORE_FORMAT, score);
         }
-
         if (timerText)
         {
-            timerText.text = Mathf.CeilToInt(gameTime).ToString();
+            timerText.text = Mathf.CeilToInt(currentTime).ToString();
         }
     }
 
-    public void TogglePause()
+    private IEnumerator GameLoop()
     {
-        if (pauseButtonText.text.Equals(REPLAY_LABEL))
+        currentTime = gameTime;
+
+        while (currentTime > 0f && !gameOver)
         {
-            SceneManager.LoadSceneAsync(0);
-            return;
+            if (!isPaused)
+            {
+                currentTime -= Time.deltaTime;
+
+                currentSpawnInterval = Mathf.Max(
+                    spawnIntervalMin,
+                    spawnIntervalStart - (gameTime - currentTime) * spawnIntervalDecrease);
+
+                UpdateUI();
+
+                spawnTimer += Time.deltaTime;
+
+                if (spawnTimer >= currentSpawnInterval)
+                {
+                    if (GetActiveItemCount() < maxSimultaneousFruits)
+                    {
+                        spawnTimer -= currentSpawnInterval;
+                        SpawnItem();
+                    }
+                    else
+                    {
+                        // At the cap: hold the timer so we don't burst-spawn
+                        // the moment a slot frees up.
+                        spawnTimer = currentSpawnInterval;
+                    }
+                }
+            }
+
+            yield return null;
         }
 
-        isPaused = !isPaused;
-        Time.timeScale = isPaused ? 0f : 1f;
-        pauseButtonText.text = isPaused ? PLAY_LABEL : PAUSE_LABEL;
-    }
-
-    public void PauseButton()
-    {
-        TogglePause();
-    }
-
-    private void OnDestroy()
-    {
-        Time.timeScale = 1f;
+        if (currentTime <= 0f)
+        {
+            gameOver = true;
+            pauseButtonText.text = REPLAY_LABEL;
+        }
     }
 }
