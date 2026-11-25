@@ -1,200 +1,148 @@
 <p align="center">
-  <img src="https://github.com/thisaislan/just-images/raw/main/images/unspaghettify/v0.0.0.png" width="800" height="500">
+  <img src="https://github.com/thisaislan/just-images/raw/main/images/unspaghettify/v0.1.0.png" width="800" height="500">
 </p>
 
-# Base Project
+# A Pinch of Taste in the Code
 
-Okay, I lied. I used AI. I said I would avoid using it to create the project, but at some point I thought it would be interesting, because in some sense, it would be a nice way to delegate the creation of the project to another being, thus avoiding prematurely adding my ideas and point of view. Other than that, asking an AI to create the project (probably) ensures that the way the project was created reflects some of the code used nowadays without too much complexity or overengineering.
+Okay, I must confess: I am not the biggest fan of C#. Although I have worked with Unity for quite a while now, I still feel that the language is powerful but a little clumsy, verbose, or just weird. But of course, none of that can stop a developer from putting their own taste into the code and adding some touches of class to it (okay, class is debatable).
 
-> I must confess I didn't give much thought to the prompt. The idea was to get a rough draft, so I just asked for the basic structure, without too many details.
+> If you want to know the kind of language I like, I can say [Kotlin](https://kotlinlang.org/),  [Swift](https://www.swift.org/), or [Lua](https://www.lua.org/).
 
-But I'm standing here describing the project rather than showing it, which is a terrible approach for games. Simply talking about something instead of demonstrating it rarely serves the narrative well. Before I go to the next section and explain the humble project itself, [here](https://thisaislan.github.io/fruit-click/) is a link to view the project online. All new versions will be available on that page, allowing us to follow the project's evolution step-by-step.
+The idea here is to start adding a little of myself to the code. Until now, only the AI has worked on it. Of course, I won't change a huge amount of code now, just small details to prepare for the next steps. Because of that, the tag didn't increase that much.
 
-## Fruit Click
+An important point is that I also tried to clean up the code a little, so some classes now look less complex, with more reusable code and better use of what was already there. Of course, we still have a huge chunk of work ahead, and I will bring more ideas that can be used in a project to improve its health. But by the end of this section, you will get a good idea of how the project works and the directions it will probably take in the next steps.
 
-Fruit Click is a small reflex game. You get 60 seconds to click fruits that pop up randomly while dodging the bombs mixed in. Miss a fruit? No penalty, just a lost chance. Click a bomb? Minus 10 points. Ouch.
+Without further ado, let's dive a little into the code.
 
-Spawns start around every 2 seconds and speed up to about every 0.5 seconds, with a max of 6 items on screen - intense, but still playable. Each fruit (or bomb) appears fully inside the screen, thanks to spawn logic that accounts for item size. A weighted table decides what shows up: cheap fruits are common, rare high-value ones are, well, rare. About one in five spawns is a bomb.
+## Small Changes
 
-Every fruit has a progress bar that drains over its lifetime. Click it before the bar empties to earn its base points - higher-value fruits have shorter timers, so they're harder to catch.
+Here we cover the small details you will probably see when you check the code, but they are not a big breakthrough. You know those kind of changes we do because, like any developer, we have our own way of writing code and, of course, our own idea of beauty. Of course I have a lot of flexibility here, I am working alone in that project, but it is important to say that when work in a team, we always work as a group. So the best approach is something the whole group is comfortable with, even if that goes against common marketing practices.
 
-The UI is simple: score top-center, countdown bottom-center, pause button top-right. When the timer hits zero, the round ends and the pause button turns into a replay button, press it to play again. Very dramatic.
+> A bad pattern is better than no pattern at all
 
-In short: tap fruits for points, dodge bombs, and survive the rising spawn rate before the clock runs out.
+The first thing I want to talk about is braces. The language lets you skip them for a single statement, but code gets edited far more often than it gets written, and the moment someone adds a second line to a braceless `if`, the indentation can lie to you. It looks guarded, the compiler disagrees, and that is exactly the kind of bug that wastes an afternoon.
 
-> A masterpiece. You might find one or two like that on the market, but this one still feels totally fresh. Joking aside, I avoid copy-pasting the [Fruit Ninja](https://www.halfbrick.com/games/fruit-ninja-classic) idea to simplify the project.
+There is also the classic dangling `else` problem, where the `else` binds to the nearest unmatched `if` no matter how the indentation makes it look. The [SEI CERT](https://cmu-sei.github.io/secure-coding-standards/sei-cert-c-coding-standard/recommendations/expressions-exp/exp19-c/) (secure coding standard from the Software Engineering Institute at Carnegie Mellon University) guideline has a security example where that ambiguity hands out admin privileges, and Apple's `goto fail`  bug is the famous real-world version of the same trap. Braces remove the ambiguity completely.
 
-## What I did?
+So yes, C# allows braceless bodies, and yes, some people find them lighter to read. But the cost of braces is two lines and a little visual noise, and the cost of skipping them is a whole category of silent bugs. That is why I put braces on every `if`, `else`, `for`, `foreach`, `while`, and `do`, every time.
 
-As I pointed out before, I started asking the AI to create the game, but since I was using the web version of DeepSeek, I needed to ask via a prompt to create the scripts and the step-by-step of how to implement the project. Although I think I still remember how to implement a simple project in Unity (I think), the idea here is to use the AI as an external thinking mind, so I avoid adding my own point of view at the start, but I still gain some knowledge about that project.
+  > A bad pattern is better than no pattern at all, but a pattern that prevents silent bugs is better than both.
 
-Using [Unity version 6000.6.0f1](https://unity.com/releases/editor/whats-new/6000.6.0f1), I started with an empty Universal 2D project, deleted the welcome package, and used [gitignore.io](https://www.toptal.com/developers/gitignore) to create the [gitignore](https://git-scm.com/docs/gitignore) file. As you can see, there's nothing fancy or any shenanigans in the settings.
+Another point you will problably notice is the way I change some comments. I beleave comment above the declaration beats a trailing comment almost every time. It is easier to read, easier to wrap when it gets long, and it does not get pushed off-screen by a long declaration or require alignment. Trailing comments are fine only for very short labels, but if the explanation actually matters, put it above.
 
-> If you want to create the same gitignore file, just click on that [link](https://www.toptal.com/developers/gitignore/api/unity,visualstudiocode,rider). It is worth noting that I am not advertising here; I simply think this type of tool should be used more in daily life to help people with their projects.
+In Unity, remember that plain comments do not show in the Inspector. That is why `[Tooltip]` is usually the better choice for serialized fields, since the designer can hover the field and see what it means. Use `/// <summary>` when you want IDE documentation in Visual Studio or Rider, and that is most useful for public APIs, shared code, or package code.
 
-After that, I just started follow the AI steps, and tah dah, we have Fruit Click. And, exactly as I predicted, I couldn't resist adding a few little things, as you can see. I added some sprites and a font too and below you can see all the assets I used, alongside the link where I found each one:
+And avoid redundant comments like `// The base points` above `public int basePoints;`. If the comment cannot tell the reader something the code does not already say, it is just noise with a `//` in front of it. A comment is a message to the next person, so if the message is, I ran out of ideas for names, perhaps the best way to use your time is to try to improve the name.
 
-  - **Fruits icon pack**, Robert Brooks - https://gamedeveloperstudio.itch.io/fruits-icon-pack
-  - **Cozy UI Pack**, dobo_ui - https://dobo-ui.itch.io/cozy-ui
-  - **Bomb Asset**, Thelma Carr - https://freepngimg.com/png/100213-bomb
-  - **Sillyfox Font**, KURO GAMES ENTERTAINMENT - https://kuroo-games.itch.io/sillyfox-font-3
+One thing you problably noticed too is I am not a big fan of `var` in C#. The problem with `var` is not that it is always wrong. It is that it hides the type at the exact point where the reader is trying to understand the code. When you write `int count = 0` or `float speed = 1.5f`, the type is part of the sentence. When you write `var count = 0`, the compiler still knows the type, but the next developer has to infer it from the right side of the assignment. In a short, obvious line, that is fine. In a longer method, or in a line where the right side is a method call with a vague name, it can turn a simple declaration into a small puzzle. That is the kind of confusion I want to avoid.
 
+Maybe the last small noticeable change is the way I organize the code. Here again I have to say that C# is a verbose language, and adding the Unity API on top can make it a little too complicated to create organized classes and keep the navigation easy. You can find solid best practices for C# member ordering in the [Microsoft C# coding conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions), the [Google C# Style Guide](https://google.github.io/styleguide/csharpguide.html) , and [SonarSource's C# coding style guidelines](https://github.com/SonarSource/sonar-dotnet/blob/master/docs/coding-style.md). Unity's own manual on [naming scripts](https://docs.unity3d.com/Manual/naming-scripts.html) covers file naming and namespace organization. There are also community guides that go deeper into Unity project structure and assembly definitions.
 
-Well, maybe you're thinking: why did I put sprites and even a font in the project already? The answer is simple: since the core is already done - although it's not a complicated one - adding some juice as soon as possible is a nice way to start feeling the project, test the art concept, and even keep the developer (in this case, me) a little happy. Although maybe simply adding images and fonts can't be called "juice," I'd say it helps me avoid adding more "ugly" things during development, since I'm seeing "nice" things - something like the [Broken Window Effect](https://www.joelvanderweele.eu/wp-content/uploads/2021/11/BrokenWindows.pdf). But that's not my field, and I think we could talk about it in a game design section.
+> A quick note on the SonarSource link: their full rule catalog now lives inside SonarQube and asks for a login, so I pointed to the public `coding-style.md` from their `sonar-dotnet` repo instead.
 
-> Yeah, maybe you noticed I ignored the audio settings here in the juice process. Please don't do that in your game. Maybe in a real project I could think about the audio side at the same moment I think about the image side; both will help to craft the experience, and in the end, the gaming experience is the game itself.
+But it is complicated to guarantee all C# situations, even more so to keep all of that in mind while you are actually building something. So in my project I follow a loose organization, one that keeps the code more readable and simple to manage, rather than forcing every file into a rigid template. The goal is not to win a style contest. The goal is to open a script six months from now and still know where things are.
 
-## Game Design
+## Not so Small Changes
 
-OK, I added that chapter because I thought it would be boring to only present the project and explain it. But in the end, I think it works well — speaking directly about some game design improvements that could be made in this project, even though I don't think I'll implement all of them. Maybe just a few.
+The idea behind this section was to explore, as the title suggests, all the not-so-small changes. These are changes that I consider more than just a whim of mine, but details to which we really should pay a little more attention when creating a project. At a certain point, I began to realize that only two things stood out enough to be included here.
 
-Without futher talking, let's start with the one we had already talked about before:
+Without wasting more time, let's talk about the first one: the `ClickableBehaviour` class. Although I am not sure about that nomenclature (SomethingBehaviour), the idea of easily grasping what the class/file does/contains is always welcome. That is why we have the `I` in front of interfaces. But I digress. The point about that class is reusability: it takes a behaviour that the code was repeating in different places and gives it one home.
 
-### Juice
- 
-The term was first coined in the article [How to Prototype a Game in Under 7 Days](https://www.gamedeveloper.com/game-platforms/how-to-prototype-a-game-in-under-7-days). In game development, it means that extra layer of feedback that makes a game feel responsive, satisfying, and alive. Adding sound effects early can definitely be part of juicing. Adding nice art assets early, though, isn't automatically "juice" - usually only if those assets are used as responsive feedback to player actions.
+Looking at the code, the class does three things. It holds the `isAlive` flag and the countdown coroutine, it defines the abstract `ClickPont()` and `StartCountDown()` for the concrete classes to fill in, and it wraps the `OnMouseDown` callback so that clicks only reach `OnMouseDownAction` while the object is alive. The `Destroy()` method is also guarded, so calling it twice does nothing. None of this is clever. It is just the boring, repeated part of a thing you can click that can die pulled out of the `Bomb` and `Fruit` classes so those classes can focus on what makes them different.
 
-> We can see the concept/idea of juice being mixed with polish or an early art/audio pass, but I'm not here to debate the terminology - just to share the nice things.
+Of course, in some cases you don't have time to reuse everything, or the cost in time or complexity is too high. In these cases it is better to keep nice and simple code that is readable than an incredibly reusable code. And of course, maybe a comment will help the next developer understand the whole situation.
 
-It's possible - and perhaps desirable - to add juice throughout every phase of the game's development. That said, applying some juice early can help, it lets developers feel the experience sooner, allowing changes and improvements early on too. It can also help validate user experience feedback and concepts.
+Keep reusability in mind, and you will probably notice the removal of the `Update` method in the `Bomb` and `Fruit` classes. Instead, we now use `IEnumerator`. The advantage is that the countdown does not need to check a timer every single frame. It yields, waits, and resumes when the time is right. For a countdown that ticks once per second, that is a much better fit than an `Update` that runs sixty times per second just to subtract from a float. As a rule of thumb: if it runs every frame, be intentional with `Update`. If it is time-based, a coroutine is usually cleaner. [Unity's own manual](https://docs.unity.com/en-us/engine/6000.6/manual/scripting/coroutines-section/coroutines) also points out that a coroutine that runs almost every frame without pausing is usually better replaced by `Update` or `LateUpdate`, which is exactly the trade-off we are making in the other direction.
 
-Of course, some balance is necessary here. Perhaps the best moment to do that is after closing the core or after the main features are in, so the task of adding juice doesn't cannibalize other important tasks. Every game has its own pace, and the team needs to figure out the best moment to do that.
+> Of course, there are more. small and big changes we could put in that and in the previous section. Literal string elimination, better names for references and methods, organization of the code itself and so on. But I don't think we can cover every small detail in these sections, otherwise they will become huge and a little tedious. The idea here is to cover the most interesting points with enough context, so we can build something together. Also, feel free to dive into the code and check the changes for yourself, but keep in mind, there are more changes to come. That was just the first trip, only to test the waters.
 
-> To be fair, I love the final stages, where we add juice and do the polishing - it’s like taking something that already shines and making it shine even brighter. The only problem is knowing when to stop.
 
-### Randomness
+## Helping Your Code
 
-As you could see in the project description, we count a lot on randomness: the fruits appear in random positions, and the fruit itself - or the bomb - is a random choice, even using some weight. Whether or how computers can really generate randomness, or the distinction between pseudo-random vs true random, is beside the purpose of this section. But the usage of some trick to create a nice experience using them is, happily, not.
+Probably no text that intends to be about code will escape what we call here a soup of letters. This one is no different. I can't guarantee I'll apply every definition in the code, but since the idea of that project is to explore, let's explore a little some of the famous acronyms we use in code development.
 
-> Before proceeding, I avoided delving into every topic (or potential topic) here, to avoid information overload. However, you will find more information in the `See Also` section, if you wish to explore further.
+### SOLID
 
-#### Fruit Selection
+The famous SOLID model was originally presented as five principles by Robert C. “Uncle Bob” Martin in his 2000 article. [Design Principles and Design Patterns](https://web.archive.org/web/20150906155800/http://www.objectmentor.com/resources/articles/Principles_and_Patterns.pdf), and Michael Feathers later arranged in an email the initials into the now-familiar acronym. The motivation was software rot: Martin acknowledged that successful software will change, and the principles are a bet that certain shapes of code handle that change with less pain.
 
-Although randomness looks like a fair way to deal with the fruit selection or even a bomb, nothing can guarantee a nice experience when the whole selection is random. Same fruits can appear a lot of times, or never appear. Also, from a game design point of view, that removes control of the situation, leaving the experience at the mercy of chance. I decided to use a weight system to try to balance things, but there are more interesting ways to allow some feeling of randomness without messing with the game design.
+**S - Single Responsibility:** A class should have one reason to change. Not in the vague sense of doing one thing, but one reason: one group of people who might ask you to change it. If two different people could come to you with two different requests, that is two responsibilities, and the class is carrying too much. Picture a class that handles both invoices and emails. The finance team wants one change, the marketing team wants another, and now every edit risks breaking the other side.
 
-One of the ways I brought to the table at the start of the project is the 7-bag system, or any variant, like in the [Tetris](https://tetris.com/) game. The idea behind the 7-bag system is to keep a "bag" containing exactly one of each of the seven tetrominoes: I, O, T, S, Z, J, and L. At the start, the bag is filled with those seven pieces and then shuffled into a random order. When the game needs a new piece, it takes the next one from the front of the bag. Once the bag is empty, you create a fresh bag with one of each piece again, shuffle it, and keep drawing from it.
+**O - Open/Closed:** Open for extension, closed for modification. You add new behavior by adding new code, not by reopening old code that already works and editing it. Think of a power strip: you plug in a new device without rewiring the house. The point is to protect the parts that already work from the ripple of a new requirement.
 
-This will allow the person to see all the fruits and ensure that a specific fruit is never further away than the total number of fruits.
+**L - Liskov Substitution:** Barbara Liskov's idea, in plain terms: if your code expects a bird, then a penguin should work there too, without the caller noticing anything strange. If your subclass throws new errors or quietly changes the rules, it is not really a subtype. It is a trap with a familiar name on the door.
 
-But maybe the best idea here would be to create pre-made bags with a preset of fruits. This way, the person playing can get the feeling of “knowing” the next fruit selected in the game. For example, if I have the following bags:
+**I - Interface Segregation:** Don't force people to depend on methods they never use. A fat interface is like a job contract that makes you sign for every task in the company, including the ones you will never touch. So you end up writing empty methods or throwing not supported just to satisfy the paperwork. Smaller, role-specific interfaces keep that pressure off.
 
-```
-Bag 1 - A, B, D
-Bag 2 - A, C, E
-Bag 3 - F, E, C
-```
+**D - Dependency Inversion:** Depend on abstractions, not on concrete details. The high-level rule (send a notification) should not be glued to the low-level detail (send it through this specific email service). Both should meet at an interface in the middle. The inversion is that the usual direction flips: the detail now depends on the abstraction, and the abstraction becomes the stable point.
 
-> I chose letters here only to simplify the explanation.
+> The honest catch: these five do not always agree. Treating them as a ranked law makes the conflicts harder, not easier. Martin's own framing is about handling change, not about scoring purity. And for someone with little practice, that is the useful part: you are not failing a test, you are making a trade-off.
 
-By the time the person sees an `F` appearing, they know the following two pieces. Of course, we can get random elements in the bag, creating a certain sensation for the person. But still, if the element `F` appears, and no `E` or `C` has appeared yet, most people who have played the game enough times will intuitively guess the next possible pieces.
+### CUPID
 
-Another advantage of that approach is that we can choose which bags will appear in each stage, in case of a game with multiple stages. This allows some level of control, and also let us know the maximum (and minimum) number of points possible in each stage. For instance:
+Daniel Terhorst-North wrote CUPID in 2022 as an alternative to SOLID, in his article [CUPID: for joyful coding](https://dannorth.net/blog/cupid-for-joyful-coding/). His point there was simple: SOLID gives you principles to argue about, while CUPID gives you properties you can look at and ask, “Does this code have them?” The goal is not to pass a purity test. The goal is code that is a joy to work with.
 
-```
-Stage 1 - Bag 1, Bag 2
-Stage 2 - Bag 2, Bag 3
-```
+**C - Composable:** It plays well with others. You can combine it with other pieces without hidden assumptions about order, context, or side effects. Think of Lego: the pieces connect because they agree on the shape of the connection, not because they know what the whole castle looks like. Small pieces can become a system without each piece knowing the whole.
 
-> `D` and `F` had a problem in the past and can't play along...
+**U - Unix philosophy:** Do one thing well. A function, class, or service should have a narrow job and a clear contract, and it should resist the urge to absorb every nearby concern. It is the difference between a knife and a Swiss Army knife. Both are useful, but only one is easy to reason about when something goes wrong.
 
-Of course, here a little randomness can help set the tone of the experience. Although the bags are previously selected, the order in which they appear can be random.
+**P - Predictable:** It does what you expect. Same inputs and same state, same behavior. No hidden mutation, no results that depend on timing, no undocumented exits. Predictability is what makes code possible to reason about. If you cannot predict it, you cannot trust it.
 
-The bag system alone gives us options for the game's tone: from something that looks totally random to tightly controlled, predictable gameplay for more experienced players. The choice should be based on the experience we have in mind.
+**I - Idiomatic:** It feels natural. The code follows the conventions of its language and ecosystem, so a reader does not have to translate a personal dialect. Idiomatic code is not about style points. It is about lowering the cost for the next person who has to read it.
 
-Alongside weight - the one the project is using - and bag, maybe we could also talk a little about the history-based system. The [Tetris: The Grand Master (TGM)](https://tetris.com/products/video-game/tetris-the-grand-master) series is the pioneer here. It keeps a 4-piece history. When generating a new piece, it "rolls" a random piece multiple times (4 tries in TGM1, 6 in TGM2) until it finds one that isn't in the history. If all tries fail, it settles for a recent piece. This method effectively minimizes immediate repeats, but it doesn't offer the strict mathematical guarantees of a bag system.
+**D - Domain-based:** The code models the problem domain in its language and structure. Names, boundaries, and flows reflect the actual business or problem being solved, not some internal technical convenience. This is what keeps code habitable as the domain grows and changes.
 
-#### Fruit Position
+> The honest catch: CUPID came partly from a playful pushback against SOLID, but the question underneath is serious. What properties make code joyful to work with, rather than merely correct by a checklist? For someone with little practice, that is the useful shift: you are not memorizing laws. You are looking at the code and asking whether it has these qualities.
 
-In the same way as the fruit selection, the position is random in the project. That can be totally ok, but if you have already played games like [Just Dance](https://www.ubisoft.com/en-us/game/just-dance), [Guitar Hero](https://en.wikipedia.org/wiki/Guitar_Hero) or [Beat Saber](https://www.beatsaber.com/), you will notice that these games have some kind of rhythm, some kind of direction to the motion. Things do not appear in any random position. Even in Fruit Ninja, the fruit positions can bring some ordered aspect when they appear.
+### DRY: Don't Repeat Yourself
 
-Well, not here. But we can bring some order to the chaos with fill tricks, and again, it depends on the kind of experience we want to create.
+Every piece of knowledge in a system should live in one place. The point isn't never type the same characters twice. The point is that when a rule changes, you change it in exactly one spot. The opposite is WET: `Write Everything Twice`, or `We Enjoy Typing`. The joke makes the cost obvious: every copy is one more place a bug can hide, and one more edit you owe future-you. And future-you, let's be honest, will not remember why there were two copies.
 
-##### Minimum Distance Between Elements
+### KISS: Keep It Simple, Stupid
 
-One of the most common techniques is Poisson Disk Sampling. Instead of scattering points completely at random, it guarantees a minimum distance between each one with one simple rule: `no two things can be closer than a certain minimum distance`. Think of a forest: trees don't grow on top of each other, but they also don't form a perfect grid. That's the kind of organic yet orderly spread you get. It's perfect for placing trees, rocks, or spawn points so they never clump together in a way that feels messy.
+The simplest design that solves the problem is the right one. The Norwegian architect Wenche Selmer spent her career perfecting the cabin: frugal, useful, adapted to its surroundings, with space reduced to the bare minimum. She embraced what she called a rich life based on simple means, and she asked her clients and students the same question: What can you do without? Code carries the same risk she was guarding against. A design too clever to strip down is a design that fails when it matters. The next person to read your function might be you in six months, with no memory of why you wrote it.
 
-##### Fill The Space Without Losing Memory
+> And yes, the S in the acronym is a little rude. Some people soften it to `Keep It Simple, Sunshine`. My favorite is `Keep It Simple, Silly`” because it works whether you are talking to a colleague or quietly to yourself after the third bug of the day.
 
-Another approach is using Halton or Sobol sequences. Imagine you want to scatter points across a square, but you don't want them to clump together or leave big empty gaps. A Halton sequence is a formula that gives you a list of points which look random, but are actually carefully spaced to fill the space as evenly as possible. The trick is `digit reversal`.
+### YAGNI: You Ain't Gonna Need It
 
-Let's say you're using base 2. You count normally: 1, 2, 3, 4. For each number, you:
+Building a generic, configurable helper for a duplication you predict for later is guessing. Write the second copy when the second case is actually real, then extract. The rule of three says wait for the third time before you abstract. It's a brake on your own enthusiasm, and honestly, that is the whole point.
 
-1. Write it in binary.
-2. Reverse the digits and put a decimal point in front.
-3. Convert back to a decimal.
+### BDUF: Big Design Up Front
 
-Doing it for the first few numbers:
+The old waterfall dream: finish and perfect the design before writing a single line of code. It sounds responsible. In practice, the design often goes stale the moment coding starts, and the team has spent months polishing a map of territory that already moved.
 
-| Count | Binary | Reversed | Decimal |
-| --- | --- | --- | --- |
-| 1 | 1 | 0.1 | 1/2 |
-| 2 | 10 | 0.01 | 1/4 |
-| 3 | 11 | 0.11 | 3/4 |
-| 4 | 100 | 0.001 | 1/8 |
-| 5 | 101 | 0.101 | 5/8 |
+> And the catch is real, but it is not that planning is bad. It is that BDUF treats the plan as a contract when it should be a hypothesis. Agile grew up as the reaction to this: short cycles, working software, feedback from real use. Games are a nice example because they live in both worlds. A studio with a publisher and a milestone contract cannot simply wander into the fog, so it plans. But the best designers treat the game design document as a compass, not a script, because fun is something you find by playing, not by declaring it on page forty. BDUF stops being a problem when the territory is actually stable: established tech, a sequel, a port, a safety-critical system where a late change costs more than the planning ever would. It becomes a problem when the map is assumed to be the ground. Plan enough to avoid the obvious dead ends, then walk.
 
-So the sequence is: 1/2, 1/4, 3/4, 1/8, 5/8.
+### DIE: Duplication Is Evil
 
-Notice how it jumps around, but never lands too close to a previous point. It "fills in the gaps".
+It restates DRY with a sharper edge, focused only on the cost of copied code. Every duplicate multiplies the work of a bug fix, since you patch the same defect in every copy, and it invites contradictions when the copies drift apart. The name is dramatic. The tax is real.
 
-For 2D points, you just use two different bases:
+### GIGO: Garbage In, Garbage Out
 
-```
-X coordinate: base 2
-Y coordinate: base 3
-```
+A program's output is only as good as its input. Feed it inaccurate data and you get inaccurate results, no matter how correct the code is. It is the quiet argument for input validation, data cleaning, and sanity checks. The code can be beautiful. If the data is wrong, the result is wrong.
 
-For 3D, add a Z coordinate: base 5. Each new dimension uses the next prime number.
+> Games make this painfully concrete. A damage formula can be a masterpiece of clean design, but if a designer types the wrong multiplier into a balance spreadsheet, the boss one-shots the player and the bug report says combat is broken. Same story with a save file corrupted by a bad migration, or a level table with one enemy spawning at the wrong coordinates. Nobody blames the data. They blame the code, because the code is what they can see. So validate at the edges where data enters, from config files, spreadsheets, the network, and player input, and fail loudly when something is off. A sanity check that catches a bad number on day one saves you a week of chasing a phantom bug that turned out to be a typo in a CSV.
 
-A famous example is [Spore](https://www.ea.com/games/spore/spore), which used an incremental Halton sequence to distribute objects. You can even use the sequence index to vary attributes like color or scale, so similar objects end up far apart.
-
-##### Cell based
-
-Often used for maps and levels, Wave Function Collapse (WFC) is a procedural generation technique. It looks at a set of example patterns you give it, then creates new layouts that follow the same rules. With some changes we can use it here for spawn waves.
-
-Imagine an empty grid where each cell will eventually hold one spawn tile. At the start, every cell can be almost any tile. WFC doesn’t fill the grid in order. Instead, it finds the cell with the fewest possible tiles left, chooses one of them, and places it there. That choice affects the neighboring cells: based on the example patterns, some tiles can no longer sit next to the chosen tile, so WFC removes those tiles from the neighbors’ options. That can cause more removals in their neighbors, and so on. WFC repeats this - pick the most restricted cell, place a tile, remove incompatible options nearby - until every cell has exactly one tile.
-
-The result is a spawn pattern that feels locally random but globally organized. The player sees variety, but the wave has a logical flow - like the fruit is coming at them in a designed sequence, not just popping up wherever.
-
-It's like solving a puzzle where the pieces are your fruit formations, and the rules are `what can sit next to what`.
-
-##### Full control
-
-For highly authored experiences, nothing beats a [data-driven](https://www.dataversity.net/data-concepts/what-is-data-driven/) spawn system. You can define waves, timing, and positions in a [CSV](https://formatarc.com/en/blog/what-is-csv/), [JSON](https://www.json.org/json-en.html), or a custom editor tool. Then a spawn system reads that data and executes the patterns. This lets designers iterate quickly without touching code. Think of rhythm games where every beat has a specific spawn point and enemy type - that's data-driven design at work.
-
-## Or, Do It Yourself
-
-Something important to say is - and maybe I should add that section before the game design section - you do not need to know everything about game design, or a specific style of game, or all the techniques to create games before you start your game - or even release it. Of course, some specific knowledge would help you and has already been tested, which can bring some security, but games are also an expression and a vision of ideas.
-
-During the development of that chapter, I came across the video [How Balatro Was Made and Why The Creator Expected to Sell Only 6 Copies](https://www.youtube.com/watch?v=g86eP48WN78) on [ThatGuyGlen channel](https://www.youtube.com/@ThatGuyGlen) and found out that [LocalThunk](https://localthunk.com/), the creator of the hit game [Balatro](https://www.playbalatro.com/), never played a [deck game](https://www.gaming.net/what-is-a-deck-building-game/) before creating his own, but the game is amazing - seriously, play it if you never have.
-
-Well, I think the last thing I should say here is: be yourself, and of course be prepared for some people not to fall in love with your project. That is ok. No game is perfect for every person in the world; we have distinct lives, points of view, and tastes - and that is beautiful and should be respected. At the same time, we should respect our own point of view, our team, and our project as a whole. So I know that is not easy - just try to play fair and be understanding; creating a game is a long but unique process.
-
-> In some cases, even you will think your game has problems - In fact, often - but that is ok. I encourage you to watch the video [Balatro's 'Cursed' Design Problem](https://www.youtube.com/watch?v=zk3S3o1qOHo) from [Game Maker's Toolkit](https://www.youtube.com/@GMTK) and see a little more about the "bigger design flow" through the designer's own vision.
+> And here's the part I keep relearning: these principles pull against each other. DRY versus KISS. DRY versus YAGNI. Open/Closed versus YAGNI. Knowing which one yields is the mark of an experienced developer, not knowing all the definitions by heart. The resolution is almost always the same: solve the problem in front of you with the simplest code that works, and refactor toward a principle when a second concrete case proves the abstraction earns its cost. The danger isn't ignorance of the acronyms. The danger is obsession: treating a principle (or practically anything in the world of programming) as an unbreakable law, applying it everywhere, and turning a tool for clarity into a source of headaches. The code is supposed to serve a purpose: helping people, not the other way around.
 
 ## See Also
 
-- [Juice it or Lose It](https://gdcvault.com/play/1016487/Juice-It-or-Lose) by Martin Jonasson & Petri Purho, is widely considered the definitive talk on game juice.
+- While I was writing these sections, I came across this magnificent work by [Women Who Code](https://womenwhocode.com/), [Squeaky Clean Code: How to Develop & Adopt Better Coding Practices](https://womenwhocode.com/blog/squeaky-clean-code-how-to-develop-adopt-better-coding-practices/).
 
-- [The art of screenshake](https://www.youtube.com/watch?v=AJdEqssNZ-U) by Jan Willem Nijman is another classic that maybe you should check.
+- If you, like me, strive to choose beautiful names for everything and are always creating a new standard for doing things, here's a, probably too big, list of name references and conversions (pelase, go easy on this): [Microsoft Common C# code conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions), [Unity Script file names and namespaces ](https://docs.unity.com/en-us/engine/6000.6/manual/scripting/get-started/naming-scripts), [Naming and code style tips for C# scripting in Unity](https://unity.com/how-to/naming-and-code-style-tips-c-scripting-unity#identifier-names), and this beautiful work by Felienne Hermans, [How patterns in variable names can make code easier to read](https://devblogs.sh/posts/felienne-hermans-how-patterns-in-variable-names-can-make-code-easier-to-read).
 
-- If you are interested in discussions about truly random numbers, you might like the article [Can a computer generate a truly random number?](https://engineering.mit.edu/ask-an-engineer/can-a-computer-generate-a-truly-random-number).
+- Because we had already talked about `Update` vs `IEnumerator`, maybe I can hint a little the future and introduce here the [Unitask](https://github.com/darsausalo/UniTask). Have fun.
 
-- But, if your interest is specifically the aspect of randomness in games, these contents are for you: [Take a Chance: The Illusion of Randomness in Games](https://www.gamedeveloper.com/design/take-a-chance-the-illusion-of-randomness-in-games), [How and why game devs manipulate 'luck' in games like Peggle](https://www.gamedeveloper.com/design/how-and-why-game-devs-manipulate-luck-in-games-like-i-peggle-i-) and [The History of Randomness (and how gamblers invented probability)](https://www.youtube.com/watch?v=snVouw9bCq0).
+- If you want to see more about SOLID and CUPID with code examples as a plus, maybe that article from [Developers Voice](https://developersvoice.com/) can help, [From SOLID to CUPID: Design Principles That Survive Production in Cloud-Native .NET](https://developersvoice.com/blog/architecture/solid-to-cupid-playbook/).
 
-- If you, like me, enjoy Tetris — and want to know a bit more about the randomization systems - here are a few articles: [How Tetris Randomizers Work (Bag, 7-Bag, Memoryless)](https://dinogame.gg/blog/how-tetris-randomizers-work/), [The history of Tetris randomizers](https://simon.lc/the-history-of-tetris-randomizers).
+- Also that good-humored article form [Geeks Programming](https://geeksprogramming.com) can help you with acronyms, [SOLID, DRY, KISS, YAGNI: Design Principles](https://geeksprogramming.com/key-principles-in-software-and-acronyms/).
 
-- [Pity System](https://www.g2a.com/news/glossary/what-is-a-pity-system-in-gaming-how-guaranteed-pulls-and-drop-protecti) was left out here, but it could be an excellent addition to make games that rely on randomness a bit more "fair."
+- We briefly mentioned software rot earlier. To understand it, it helps to look at where it comes from. Take the classic 1997 interview [Elegance and Entropy](https://www.salon.com/1997/10/09/interview_9/) from Salon, with Ellen Ullman, where she describes the programming life as a "constant tug of war between the computer's demand for exactitude and the entropic chaos of real life."
 
-- A nice way to see Poisson-Disc Sampling working is in the [Jason Davies](https://www.jasondavies.com/) project [here](https://www.jasondavies.com/poisson-disc/).
-
-- The article [Fast Object Distribution](https://www.cs.cmu.edu/~ajw/s2007/0312-ObjectDistribution.pdf) does an excellent job of explaining the use of Halton sequences in games.
-
-- Check that nice [article](https://excaliburjs.com/blog/Wave%20Function%20Collapse) about the WFC technique.
 
 </br>
 <p align="center">
-<a href="https://github.com/thisaislan/unspaghettify/blob/home/README.md">
+<a href="https://github.com/thisaislan/unspaghettify/blob/v0.0.0/README.md">
     prev</a>
     |
   <a href="https://github.com/thisaislan/unspaghettify/blob/index/README.md">
